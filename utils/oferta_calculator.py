@@ -49,14 +49,20 @@ def calculeaza_oferta(data, cerere):
         cost_matrita = culori * data["matrite"].get(cerere.dimensiune, 0)
 
     # Cost transport (1 palet sau cutie)
-    cutii = nr_bucati / data["ambalare"].get(cerere.dimensiune, 1)
-    paleti = cutii // data["paleti"].get(cerere.dimensiune, 100)
-    rest = cutii % data["paleti"].get(cerere.dimensiune, 100)
-    transport = 0
-    if paleti >= 1:
-        transport += data["transport"].get("Palet", 0)
-    if rest > 0:
-        transport += data["transport"].get("Cutie", 0)
+import math
+
+buc_per_cutie = data["ambalare"].get(cerere.dimensiune, 1)
+cutii = math.ceil(nr_bucati / buc_per_cutie)
+
+cutii_per_palet = int(data["paleti"].get(cerere.dimensiune, 40))
+nr_paleti = cutii // cutii_per_palet
+cutii_extra = cutii % cutii_per_palet
+
+transport = 0
+if nr_paleti > 0:
+    transport += nr_paleti * data["transport"]["Palet"]
+if cutii_extra > 0:
+    transport += cutii_extra * data["transport"]["Cutie"]  
 
     total_final = total + cost_matrita + transport
 
