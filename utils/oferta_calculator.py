@@ -67,3 +67,4 @@ def calculeaza_oferta(data, cerere):
         f"Matrita: {cost_matrita} lei\n"
         f"Transport: {transport} lei\n"
         f"Total final: {total_final:.2f} lei"
+    )
