@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>FlexoAI Sacose</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; max-width: 500px; margin: auto; }
+    label, select, input { display: block; margin-top: 1em; width: 100%; }
+    button { margin-top: 1em; padding: 0.5em; width: 100%; }
+    pre { background: #f0f0f0; padding: 1em; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h2>Cere ofertă sacose</h2>
+  <form id="form">
+    <label>Dimensiune:
+      <input name="dimensiune" required />
+    </label>
+    <label>Material:
+      <select name="material">
+        <option value="albă">albă</option>
+        <option value="maro">maro</option>
+      </select>
+    </label>
+    <label>Mâner:
+      <select name="maner">
+        <option value="plat">plat</option>
+        <option value="fără">fără</option>
+        <option value="plat colorat">plat colorat</option>
+        <option value="sfoară">sfoară</option>
+        <option value="sfoară colorată">sfoară colorată</option>
+      </select>
+    </label>
+    <label>Imprimare:
+      <select name="imprimare">
+        <option value="mică">mică</option>
+        <option value="25-50%">25-50%</option>
+        <option value="50-75%">50-75%</option>
+        <option value="fontă">fontă</option>
+        <option value="fara">fara</option>
+      </select>
+    </label>
+    <label>Cantitate:
+      <input name="cantitate" type="number" required />
+    </label>
+    <button type="submit">Calculează oferta</button>
+  </form>
+  <pre id="rezultat"></pre>
+
+  <script>
+    document.getElementById("form").onsubmit = async (e) => {
+      e.preventDefault();
+      const form = e.target;
+      const data = Object.fromEntries(new FormData(form).entries());
+      data.cantitate = parseInt(data.cantitate);
+
+      const res = await fetch("/oferta", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const json = await res.json();
+      document.getElementById("rezultat").textContent = json.răspuns || json.eroare;
+    };
+  </script>
+</body>
+</html>
