@@ -1,23 +1,21 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Sau pune doar domeniul tău WordPress dacă vrei restricție
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from utils.excel_loader import load_data
 from utils.oferta_calculator import calculeaza_oferta
 
 app = FastAPI()
-data = load_data()
 
+# ✅ Activare CORS complet (pentru WordPress sau orice domeniu)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Poți restrânge la ["https://siteultau.ro"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# ✅ Structura cerere de ofertă
 class CerereOferta(BaseModel):
     dimensiune: str
     material: str
@@ -25,6 +23,15 @@ class CerereOferta(BaseModel):
     imprimare: str = "mică"
     cantitate: int
 
+# ✅ Încarcă datele Excel o singură dată la pornire
+data = load_data()
+
+# ✅ Răspuns pe homepage (opțional, evită 404 pe /)
+@app.get("/")
+def index():
+    return {"mesaj": "FlexoAI rulează. Folosește /static/widget.html pentru ofertare."}
+
+# ✅ Endpoint principal
 @app.post("/oferta")
 async def oferta(cerere: CerereOferta):
     try:
